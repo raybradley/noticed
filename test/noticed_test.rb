@@ -103,6 +103,10 @@ class WithDynamicDelay < Noticed::Base
   end
 end
 
+class WithWaitUntil < Noticed::Base
+  deliver_by :test, wait_until: 1.day.from_now
+end
+
 class WithCustomQueue < Noticed::Base
   deliver_by :test, queue: "custom"
 end
@@ -219,6 +223,14 @@ class Noticed::Test < ActiveSupport::TestCase
 
       assert_enqueued_with(at: 2.minutes.from_now) do
         WithDynamicDelay.deliver(users(:two))
+      end
+    end
+  end
+
+  test "asserts delivery is enqueued with wait_until" do
+    freeze_time do
+      assert_enqueued_with(at: 1.day.from_now) do
+        WithWaitUntil.deliver(user)
       end
     end
   end

@@ -121,7 +121,8 @@ module Noticed
 
           method.set(wait: delay, queue: queue).perform_later(args)
         elsif (wait_until = delivery_method.dig(:options, :wait_until))
-          puts wait_until
+          wait_until = send(wait_until) if wait_until.is_a? Symbol
+
           method.set(wait_until: wait_until, queue: queue).perform_later(args)
         elsif enqueue
           method.set(queue: queue).perform_later(args)
